@@ -1,0 +1,101 @@
+<%- include("../template/cabecera") %>
+    <div class="container">
+        <h1 class="d-flex flex-row justify-content-center alig-items-center">Detalle de la figura</h1>
+        <% if(error){ %>
+            <%= mensaje %>
+                <a href="/figura" class="btn btn-secondary btn-block my-2">Volver</a>
+                <% }else{ %>
+                    <div class="d-flex flex-row justify-content-center alig-items-center">
+                        <form id="editar" method="post" data-id="<%= figura.id %>">
+                            <div class="form-group p-2">
+                                <label for="nombre" class="text-danger p-1 me-5">Nombre de la figura:</label><br>
+                                <input type="text" value="<%= figura.nombre %>" class="form-class my-2" name="nombre"
+                                    id="nombreInput" size="50%">
+                            </div>
+                            <div class="form-group p-2">
+                                <label for="categoria" class="text-danger p-1">Categoría de la figura:</label><br>
+                                <input type="text" value="<%= figura.categoria %>" class="form-class my-2"
+                                    name="categoria" id="categoriaInput" size="50%"><br>
+                                <small id="small-s" class="form-text text-muted p-1">Las categorías que debes introducir
+                                    son figuras de anime, de DC, de Marvel, de series,<br>
+                                    de Disney, Funko POP o replicas a escala</small>
+
+                            </div>
+                            <div class="form-group p-2">
+                                <label for="fabricante" class="text-danger p-1 mr-">Fabricante de la figura:</label><br>
+                                <input type="text" value="<%= figura.fabricante %>" class="form-class my-2"
+                                    name="fabricante" id="fabricanteInput" size="50%"> <br>
+                                    <small id="small-s" class="form-text text-muted p-1 m-1">Los fabricantes que debes introducir son Bandai, D-STAGE, Disney, Enesco, Funko,<br> Hasbro, Kotobuyika o Iron Studios 
+                                    </small>    
+
+                            </div>
+                            <div class="form-group p-2">
+                                <label for="precio" class="text-danger p-1">Precio de la figura:</label><br>
+                                <input type="text" value="<%= figura.precio %>" class="form-class my-2" name="precio"
+                                    id="precioInput" size="50%"> <br>
+
+                            </div>
+                            <div class="form-group p-2">
+                                <label for="descripcion" class="text-danger p-1">Descripción de la figura:</label><br>
+                                <input type="text" value="<%= figura.categoria %>" class="form-class my-2"
+                                    name="descripcion" id="descripcionInput" size="50%">
+                            </div>
+
+                            <button type="submit" class="btn btn-warning btn-sm m-2">Editar</button>
+
+                            <button class="btn btn-danger btn-sm" id="eliminar"
+                                data-id="<%= figura.id %>">Borrar</button>
+                            <hr>
+                        </form>
+                    </div>
+
+                    <% } %>
+    </div>
+    <%- include("../template/footer") %>
+        <script>
+            const btnEliminar = document.querySelector('#eliminar')
+            btnEliminar.addEventListener('click', async () => {
+                console.log(btnEliminar.dataset.id)
+                try {
+                    // https://developer.mozilla.org/es/docs/Web/API/HTMLElement/dataset
+                    const data = await fetch(`/figura/${btnEliminar.dataset.id}`, {
+                        method: 'delete'
+                    })
+                    const res = await data.json()
+                    console.log(res)
+                    if (res.estado) {
+                        window.location.href = '/figura'
+                    } else {
+                        console.log(res)
+                    }
+                } catch (error) {
+                    console.log(error)
+                }
+            })
+
+
+            const formEditar = document.querySelector('#editar');
+            formEditar.addEventListener('submit', async (e) => {
+                e.preventDefault()
+                const nombre = formEditar.elements['nombre'].value
+                const categoria = formEditar.elements['categoria'].value
+                const fabricante = formEditar.elements['fabricante'].value
+                const precio = formEditar.elements['precio'].value
+                const descripcion = formEditar.elements['descripcion'].value
+                const id = formEditar.dataset.id
+                const data = await fetch(`/figura/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ nombre, categoria, fabricante, precio, descripcion })
+                })
+                const res = await data.json()
+                if (res.estado) {
+                    window.location.href = '/figura'
+                } else {
+                    console.log(res)
+                }
+            })
+
+        </script>
